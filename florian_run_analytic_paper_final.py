@@ -50,7 +50,7 @@ def determine_cases(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
 
                 if(tolerance(r_i, 0.0)):
 
-                    print('on surface')
+                    #print('on surface')
                     return 111
 
                 else:#(r_i > 0.0):
@@ -66,7 +66,7 @@ def determine_cases(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
                 else:#(r_i > 0.0):
                     if(tolerance(r, r_i)):
 
-                        print('on surface')
+                        #print('on surface')
                         return 114
 
                     else:#(r != r_i):
@@ -77,7 +77,7 @@ def determine_cases(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
             if(tolerance(r, 0.0)):
                 if(tolerance(r_i, 0.0)):
 
-                    print('on surface')
+                    #print('on surface')
                     return 121
 
                 else:#(r_i > 0.0):
@@ -102,7 +102,7 @@ def determine_cases(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
             if(tolerance(r, 0.0)):
                 if(tolerance(r_i, 0.0)):
 
-                    print('on surface')
+                    #print('on surface')
                     return 131
 
                 else:#(r_i > 0.0):
@@ -1961,7 +1961,7 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
 
     cases_mask = cases == case_id[0]
     if(np.any(cases_mask)):
-        print('Warning...some Points on Surface')
+        #print('Warning...some Points on Surface')
         results[cases_mask,:,:] = np.nan
 
     cases_mask = cases == case_id[1]
@@ -1972,7 +1972,7 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
 
     cases_mask = cases == case_id[3]
     if(np.any(cases_mask)):
-        print('Warning...some Points on Surface')
+        #print('Warning...some Points on Surface')
         results[cases_mask,:,:] = np.nan
 
     cases_mask = cases == case_id[4]
@@ -1980,7 +1980,7 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
 
     cases_mask = cases == case_id[5]
     if(np.any(cases_mask)):
-        print('Warning...some Points on Surface')
+        #print('Warning...some Points on Surface')
         results[cases_mask,:,:] = np.nan
 
     cases_mask = cases == case_id[6]
@@ -1997,7 +1997,7 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
 
     cases_mask = cases == case_id[10]
     if(np.any(cases_mask)):
-        print('Warning...some Points on Surface')
+        #print('Warning...some Points on Surface')
         results[cases_mask,:,:] = np.nan
 
     cases_mask = cases == case_id[11]
