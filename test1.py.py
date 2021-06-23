@@ -4,6 +4,7 @@ Testing all cases of new VS original
 
 # pylint: disable=using-constant-test
 import numpy as np
+from numpy.lib.type_check import nan_to_num
 from florian_run_analytic_paper_final import H_total_final
 from magpy_getH import getH_cy_section
 
@@ -29,7 +30,6 @@ if True:
     H1 = getH_cy_section(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(H1,H2)
-
 
 if True:
     cases += [122, 222, 132, 232]
@@ -150,12 +150,12 @@ if True:
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
-
 # check if all cases have been sampled
-cases = list(set(cases))
-cases.sort()
-case_id = [111, 112, 113, 114, 115, 121, 122, 123, 124, 125, 131, 132, 133,
-    134, 135, 211, 212, 213, 214, 215, 221,
-    222, 223, 224, 225, 231, 232, 233, 234, 235]
-case_id.sort()
-assert np.allclose(np.array(cases), np.array(case_id))
+if True:
+    cases = list(set(cases))
+    cases.sort()
+    case_id = [111, 112, 113, 114, 115, 121, 122, 123, 124, 125, 131, 132, 133,
+        134, 135, 211, 212, 213, 214, 215, 221,
+        222, 223, 224, 225, 231, 232, 233, 234, 235]
+    case_id.sort()
+    assert np.allclose(np.array(cases), np.array(case_id))

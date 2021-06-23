@@ -1053,6 +1053,8 @@ def Hz_zk_case235(r, r_i, r_bar_i, phi_bar_j, theta_M, z_bar_k):
 #calculation of all field components for each case
 #especially these function show, which inputs are needed for the calculation
 #full vectorization for all cases could be implemented here
+# input: ndarray, shape (n,)
+# out: ndarray, shape (n,3,3) # (n)vector, (3)r_phi_z, (3)face
 
 def case112(r_i, phi_bar_M, theta_M):
     results = np.zeros((len(r_i), 3, 3))
@@ -1289,168 +1291,53 @@ def case235(r, r_i, r_bar_i, phi_bar_j, phi_bar_M, phi_bar_Mj, theta_M, z_bar_k)
     results[:,2,2] = Hz_zk_case235(r, r_i, r_bar_i, phi_bar_j, theta_M, z_bar_k)
     return results
 
-############
-############
-############
-# calculates the antiderivate for a certain parameter set
-# for the real field, this has to be evaluated 8 times at all bounds r_i, phi_j, z_k of the cylinder tile
-# for vectorized computing, all input values could be 1D arrays
 
 def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
+    """
+    determine cases from input values and call respective case-functions.
+    input parameters: ndarrays, shape (n,)
+    output: ndarray, shape (n,3,3) with (n)vector, (3)H-component, (3)face_type
+    note: inputs will come with length = multiples of 8. Each of these stacks
+    correspond to one Cylinder section evaluation (2x2x2 boundary combinations)
+    """
 
+    n = len(r)
+    results = np.zeros((n, 3, 3))*np.nan
+
+    # cases to evaluate
+    cases = determine_cases(r, phi, z, r_i, phi_j, z_k)
+
+    # list of all possible cases - excluding the nan-cases 111, 114, 121, 131
+    case_id = np.array([112, 113, 115, 122, 123, 124, 125, 132, 133, 134,
+        135, 211, 212, 213, 214, 215, 221, 222, 223, 224, 225, 231, 232, 233, 234, 235])
+
+    # corresponding case evaluation functions
+    case_fkt = [case112, case113, case115, case122, case123, case124, case125, case132,
+        case133, case134, case135, case211, case212, case213, case214, case215, case221,
+        case222, case223, case224, case225, case231, case232, case233, case234, case235]
+
+    # required function arguments
     r_bar_i = r - r_i
     phi_bar_j = phi - phi_j
     phi_bar_M = phi_M - phi
     phi_bar_Mj = phi_M - phi_j
     z_bar_k = z - z_k
+    #          0   1      2         3          4          5          6        7       8
+    allargs = [r, r_i, r_bar_i, phi_bar_j, phi_bar_M, phi_bar_Mj, theta_M, z_bar_k, phi_j]
+    case_args = [(1,4,6), (0,4,6), (0,1,2,3,4,6), (1, 4, 6), (0, 4, 6), (0, 4, 6),
+    (0, 1, 2, 3, 4, 6), (0,1,3,5,6), (0,3,5,6), (0,3,4,5,6), (0,1,2,3,4,5,6), (8,4,6,7),
+    (1,8,3,4,6,7), (0,3,4,6,7), (0,8,3,4,6,7), (0,1,2,3,4,6,7), (8,4,6,7), (1,8,4,6,7),
+    (0,3,4,6,7), (0,3,4,6,7), (0,1,2,3,4,6,7), (8,3,5,6,7), (1,8,3,4,5,6,7), (0,3,5,6,7),
+    (0,3,4,5,6,7), (0,1,2,3,4,5,6,7)]
 
-    case_id = np.array([111, 112, 113, 114, 115, 121, 122, 123, 124, 125, 131, 132, 133, 134, 135, 211, 212, 213, 214, 215, 221, 222, 223, 224, 225, 231, 232, 233, 234, 235], dtype = np.uint8)
-
-    n = len(r)
-    results = np.zeros((n, 3, 3))
-
-    cases = determine_cases(r, phi, z, r_i, phi_j, z_k)
-
-    # all cases:
-    # mask for each case is created and corresponding values are passed to functions
-
-    #for id in case_id:
-    #    mask = cases==id
-    #    if any(mask):
-    #        results[mask] = supercase(id,r, phi, z, r_i, phi_j, z_k, phi_M, theta_M)
-
-    m0 = cases == case_id[0]
-    if np.any(m0):
-        results[m0,:,:] = np.nan
-
-    m0 = cases == case_id[1]
-    if np.any(m0):
-        results[m0,:,:] = case112(r_i[m0], phi_bar_M[m0], theta_M[m0])
-
-    m0 = cases == case_id[2]
-    if np.any(m0):
-        results[m0,:,:] = case113(r[m0], phi_bar_M[m0], theta_M[m0])
-
-    m0 = cases == case_id[3]
-    if np.any(m0):
-        results[m0,:,:] = np.nan
-
-    m0 = cases == case_id[4]
-    if np.any(m0):
-        results[m0,:,:] = case115(r[m0], r_i[m0], r_bar_i[m0], phi_bar_j[m0], phi_bar_M[m0],
-            theta_M[m0])
-
-    m0 = cases == case_id[5]
-    if(np.any(m0)):
-        results[m0,:,:] = np.nan
-
-    m0 = cases == case_id[6]
-    if np.any(m0):
-        results[m0,:,:] = case122(r_i[m0], phi_bar_M[m0], theta_M[m0])
-
-    m0 = cases == case_id[7]
-    if np.any(m0):
-        results[m0,:,:] = case123(r[m0], phi_bar_M[m0], theta_M[m0])
-
-    m0 = cases == case_id[8]
-    if np.any(m0):
-        results[m0,:,:] = case124(r[m0], phi_bar_M[m0], theta_M[m0])
-
-    m0 = cases == case_id[9]
-    if np.any(m0):
-        results[m0,:,:] = case125(r[m0], r_i[m0], r_bar_i[m0], phi_bar_j[m0], phi_bar_M[m0],
-            theta_M[m0])
-
-    m0 = cases == case_id[10]
-    if(np.any(m0)):
-        results[m0,:,:] = np.nan
-
-    m0 = cases == case_id[11]
-    if np.any(m0):
-        results[m0,:,:] = case132(r[m0], r_i[m0], phi_bar_j[m0], phi_bar_Mj[m0], theta_M[m0])
-
-    m0 = cases == case_id[12]
-    if np.any(m0):
-        results[m0,:,:] = case133(r[m0], phi_bar_j[m0], phi_bar_Mj[m0], theta_M[m0])
-
-    m0 = cases == case_id[13]
-    if np.any(m0):
-        results[m0,:,:] = case134(r[m0], phi_bar_j[m0], phi_bar_M[m0], phi_bar_Mj[m0], theta_M[m0])
-
-    m0 = cases == case_id[14]
-    if np.any(m0):
-        results[m0,:,:] = case135(r[m0], r_i[m0], r_bar_i[m0], phi_bar_j[m0],
-            phi_bar_M[m0], phi_bar_Mj[m0], theta_M[m0])
-
-    m0 = cases == case_id[15]
-    if np.any(m0):
-        results[m0,:,:] = case211(phi_j[m0], phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[16]
-    if np.any(m0):
-        results[m0,:,:] = case212(r_i[m0], phi_j[m0], phi_bar_j[m0], phi_bar_M[m0],
-            theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[17]
-    if np.any(m0):
-        results[m0,:,:] = case213(r[m0], phi_bar_j[m0], phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[18]
-    if np.any(m0):
-        results[m0,:,:] = case214(r[m0], phi_j[m0], phi_bar_j[m0], phi_bar_M[m0],
-            theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[19]
-    if np.any(m0):
-        results[m0,:,:] = case215(r[m0], r_i[m0], r_bar_i[m0], phi_bar_j[m0],
-            phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[20]
-    if np.any(m0):
-        results[m0,:,:] = case221(phi_j[m0], phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[21]
-    if np.any(m0):
-        results[m0,:,:] = case222(r_i[m0], phi_j[m0], phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[22]
-    if np.any(m0):
-        results[m0,:,:] = case223(r[m0], phi_bar_j[m0], phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[23]
-    if np.any(m0):
-        results[m0,:,:] = case224(r[m0], phi_bar_j[m0], phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[24]
-    if np.any(m0):
-        results[m0,:,:] = case225(r[m0], r_i[m0], r_bar_i[m0], phi_bar_j[m0],
-            phi_bar_M[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[25]
-    if np.any(m0):
-        results[m0,:,:] = case231(phi_j[m0], phi_bar_j[m0], phi_bar_Mj[m0], theta_M[m0],
-            z_bar_k[m0])
-
-    m0 = cases == case_id[26]
-    if np.any(m0):
-        results[m0,:,:] = case232(r_i[m0], phi_j[m0], phi_bar_j[m0], phi_bar_M[m0],
-            phi_bar_Mj[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[27]
-    if np.any(m0):
-        results[m0,:,:] = case233(r[m0], phi_bar_j[m0], phi_bar_Mj[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[28]
-    if np.any(m0):
-        results[m0,:,:] = case234(r[m0], phi_bar_j[m0], phi_bar_M[m0],
-            phi_bar_Mj[m0], theta_M[m0], z_bar_k[m0])
-
-    m0 = cases == case_id[29]
-    if np.any(m0):
-        results[m0,:,:] = case235(r[m0], r_i[m0], r_bar_i[m0], phi_bar_j[m0],
-            phi_bar_M[m0], phi_bar_Mj[m0], theta_M[m0], z_bar_k[m0])
+    # calling case functions with respective arguments
+    for cid,cfkt,cargs in zip(case_id, case_fkt, case_args):
+        mask = cases==cid
+        if any(mask):
+            results[mask] = cfkt(*[allargs[aid][mask] for aid in cargs])
 
     return results
+
 
 ############
 ############
