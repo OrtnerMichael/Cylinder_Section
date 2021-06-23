@@ -4,7 +4,6 @@ Testing all cases of new VS original
 
 # pylint: disable=using-constant-test
 import numpy as np
-from numpy.lib.type_check import nan_to_num
 from florian_run_analytic_paper_final import H_total_final
 from magpy_getH import getH_cy_section
 

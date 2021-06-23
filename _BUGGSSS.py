@@ -1,5 +1,5 @@
 import numpy as np
-from florian_run_analytic_paper_final import H_total_final, arctan_k_tan_2
+from florian_run_analytic_paper_final import H_total_final
 import florian_ell3_paper as icels
 
 
@@ -17,25 +17,3 @@ if False:
     mag=np.array([[1.30684832, 0.59188274 ,2.37654756]])
     obs_pos = np.array([ [-1.18400611,  1.92119189, -2.07793907]])
     H_total_final(obs_pos, dim, mag)
-
-
-# something wrong with Pi_coef() !!! unused argument - probably a bug ?
-if False:
-    def Hz_zk_case214(r, phi_bar_j, theta_M, z_bar_k):
-        t = np.sqrt(r**2 + z_bar_k**2)
-        def Pi(sign):
-            return icels.el3_angle_vectorized(phi_bar_j/2.0,
-                2.0 * r / (r + sign * t), -4.0 * r**2 / z_bar_k**2)
-        def Pi_coef(sign): #<<<<<<<<<<<<<<<<
-            return np.cos(theta_M) * np.sign(z_bar_k)
-        return Pi_coef(1) * Pi(1) + Pi_coef(-1) * Pi(-1)
-
-# same for case 234
-if False:
-    def Hz_zk_case234(r, phi_bar_j, theta_M, z_bar_k):
-        t = np.sqrt(r**2 + z_bar_k**2)
-        def Pi(sign):
-            return icels.el3_angle_vectorized(phi_bar_j/2.0, 2.0 * r / (r + sign * t), -4.0 * r**2 / z_bar_k**2)
-        def Pi_coef(sign): # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-            return np.cos(theta_M) * np.sign(z_bar_k)
-        return Pi_coef(1) * Pi(1) + Pi_coef(-1) * Pi(-1)

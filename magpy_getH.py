@@ -1330,7 +1330,7 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
     (0,3,4,6,7), (0,3,4,6,7), (0,1,2,3,4,6,7), (8,3,5,6,7), (1,8,3,4,5,6,7), (0,3,5,6,7),
     (0,3,4,5,6,7), (0,1,2,3,4,5,6,7)]
 
-    # calling case functions with respective arguments
+    # calling case functions with respective masked arguments
     for cid,cfkt,cargs in zip(case_id, case_fkt, case_args):
         mask = cases==cid
         if any(mask):
