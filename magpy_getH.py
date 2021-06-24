@@ -1292,17 +1292,30 @@ def case235(r, r_i, r_bar_i, phi_bar_j, phi_bar_M, phi_bar_Mj, theta_M, z_bar_k)
     return results
 
 
-def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
+def getH_cy_section(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.ndarray:
     """
-    determine cases from input values and call respective case-functions.
-    input parameters: ndarrays, shape (n,)
-    output: ndarray, shape (n,3,3) with (n)vector, (3)H-component, (3)face_type
-    note: inputs will come with length = multiples of 8. Each of these stacks
-    correspond to one Cylinder section evaluation (2x2x2 boundary combinations)
+    Cylinder section field
+
+    obs_pos : ndarray, shape (N,3)
+        observer positions (r,phi,z) in cy CS, units: [mm] [rad]
+    dim: ndarray, shape (N,6)
+        section dimensions (r1,r2,phi1,phi2,z1,z2) in cy CS , units: [mm] [rad]
+    mag: ndarray, shape (N,3)
+        magnetization vector (|M|, phi, th) in spherical CS, units: [mT] [rad]
+
+    Computation of the Cylinder section field is based on Slanovc2021
     """
 
-    n = len(r)
-    results = np.zeros((n, 3, 3))*np.nan
+    # tile inputs into 8-stacks (boundary cases)
+    r, phi, z = np.repeat(obs_pos, 8, axis=0).T
+    r_i = np.repeat(dim[:,:2], 4)
+    phi_j = np.repeat(np.tile(dim[:,2:4],2), 2)
+    z_k = np.ravel(np.tile(dim[:,4:6], 4))
+    _, phi_M, theta_M = np.repeat(mag, 8, axis=0).T
+
+    #initialize results array with nan
+    result = np.empty((len(r), 3, 3))
+    result[:] = np.nan
 
     # cases to evaluate
     cases = determine_cases(r, phi, z, r_i, phi_j, z_k)
@@ -1316,7 +1329,7 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
         case133, case134, case135, case211, case212, case213, case214, case215, case221,
         case222, case223, case224, case225, case231, case232, case233, case234, case235]
 
-    # required function arguments
+    # required case function arguments
     r_bar_i = r - r_i
     phi_bar_j = phi - phi_j
     phi_bar_M = phi_M - phi
@@ -1324,90 +1337,22 @@ def antiderivate_final(r, phi, z, r_i, phi_j, z_k, phi_M, theta_M):
     z_bar_k = z - z_k
     #          0   1      2         3          4          5          6        7       8
     allargs = [r, r_i, r_bar_i, phi_bar_j, phi_bar_M, phi_bar_Mj, theta_M, z_bar_k, phi_j]
-    case_args = [(1,4,6), (0,4,6), (0,1,2,3,4,6), (1, 4, 6), (0, 4, 6), (0, 4, 6),
-    (0, 1, 2, 3, 4, 6), (0,1,3,5,6), (0,3,5,6), (0,3,4,5,6), (0,1,2,3,4,5,6), (8,4,6,7),
-    (1,8,3,4,6,7), (0,3,4,6,7), (0,8,3,4,6,7), (0,1,2,3,4,6,7), (8,4,6,7), (1,8,4,6,7),
-    (0,3,4,6,7), (0,3,4,6,7), (0,1,2,3,4,6,7), (8,3,5,6,7), (1,8,3,4,5,6,7), (0,3,5,6,7),
-    (0,3,4,5,6,7), (0,1,2,3,4,5,6,7)]
+    case_args = [(1,4,6), (0,4,6), (0,1,2,3,4,6), (1,4,6), (0,4,6), (0,4,6), (0,1,2,3,4,6),
+    (0,1,3,5,6), (0,3,5,6), (0,3,4,5,6), (0,1,2,3,4,5,6), (8,4,6,7), (1,8,3,4,6,7), (0,3,4,6,7),
+    (0,8,3,4,6,7), (0,1,2,3,4,6,7), (8,4,6,7), (1,8,4,6,7), (0,3,4,6,7), (0,3,4,6,7),
+    (0,1,2,3,4,6,7), (8,3,5,6,7), (1,8,3,4,5,6,7), (0,3,5,6,7), (0,3,4,5,6,7), (0,1,2,3,4,5,6,7)]
 
     # calling case functions with respective masked arguments
     for cid,cfkt,cargs in zip(case_id, case_fkt, case_args):
         mask = cases==cid
         if any(mask):
-            results[mask] = cfkt(*[allargs[aid][mask] for aid in cargs])
+            result[mask] = cfkt(*[allargs[aid][mask] for aid in cargs])
 
-    return results
+    # sum up contributions from different boundary cases (ax1) and different face types (ax3)
+    result = np.reshape(result, (-1,8,3,3))
+    result = np.sum(result[:,(1,2,4,7)] - result[:,(0,3,5,6)], axis=(1,3))
 
+    # multiply with magnetization amplitude
+    result = result.T*mag[:,0]/(4*np.pi)
 
-############
-############
-############
-#final function for the field evaluation
-#(r, phi, z): point for field evaluation in cylinder coordinates
-#(r_i12, phi_j12, z_k12): limits of the cylinder tiles in cylinder coordinates
-#(M, phi_M, theta_M): spherical coordinates of the homogenious magnetization: amplitude of magnetization, azimuthal angle, polar angle
-#
-#for vectorized computation, the input values have to be the following form
-#if m denotes the number of different cylinder tiles and n the number of field evaluation points, the input parameters must be arrays with dimensions:
-#r, phi, z: m x n
-#r_i12, phi_j12, z_k12: m x 2
-#M, phi_M, theta_M: m
-#
-#output is a m x n x 3 array, which contains the three components of the field in cylindrical coordinates for m cylinder tiles at n positions each
-
-def getH_cy_section(obs_pos, dim, mag):
-    """
-    Cylinder section field
-    obs_pos : ndarray, shape (N,3)
-        observer positions (r,phi,z) in cy CS, units: [mm] [rad]
-    dim: ndarray, shape (N,6)
-        section dimensions (r1,r2,phi1,phi2,z1,z2) in cy CS , units: [mm] [rad]
-    mag: ndarray, shape (N,3)
-        magnetization vector (amp, phi, th) in spherical CS, units: [mT] [rad]
-    """
-
-    # dimension inputs
-    r_i12, phi_j12, z_k12 = dim[:,:2], dim[:,2:4], dim[:,4:6]
-
-    # tile up obs_pos
-    #n_cy = len(r_i12)
-    #obs_pos_tile = np.tile(obs_pos, (n_cy,1,1))
-    #r, phi, z = np.moveaxis(obs_pos_tile, 2, 0)
-    r, phi, z = obs_pos.T
-    r = np.array([r]).T
-    phi = np.array([phi]).T
-    z = np.array([z]).T
-
-    # magnetization
-    M, phi_M, theta_M = mag.T
-
-    ###
-    #here, some reshapes have to be done to convert the input data to the proper vectorizable format
-    #eventually also special cases (like e.g. scalar input) should be handled here in
-    r_i12_concat = np.stack((r_i12[:,0], r_i12[:,0], r_i12[:,0], r_i12[:,0], r_i12[:,1], r_i12[:,1], r_i12[:,1], r_i12[:,1]), axis = 1)
-    phi_j12_concat = np.stack((phi_j12[:,0], phi_j12[:,0], phi_j12[:,1], phi_j12[:,1], phi_j12[:,0], phi_j12[:,0], phi_j12[:,1], phi_j12[:,1]), axis = 1)
-    z_k12_concat = np.stack((z_k12[:,0], z_k12[:,1], z_k12[:,0], z_k12[:,1], z_k12[:,0], z_k12[:,1], z_k12[:,0], z_k12[:,1]), axis = 1)
-
-    m, n = np.shape(r)
-    result_final = np.zeros((m, n, 3, 3))
-
-    r_full = np.tile(r[:,:,np.newaxis],(1,1,8))
-    phi_full = np.tile(phi[:,:,np.newaxis],(1,1,8))
-    z_full = np.tile(z[:,:,np.newaxis],(1,1,8))
-
-    r_i12_full = np.tile(r_i12_concat[:,np.newaxis,:],(1,n,1))
-    phi_j12_full = np.tile(phi_j12_concat[:,np.newaxis,:],(1,n,1))
-    z_k12_full = np.tile(z_k12_concat[:,np.newaxis,:],(1,n,1))
-
-    M_full = np.tile(M[:,np.newaxis,np.newaxis,np.newaxis,np.newaxis],(1,n,8,3,3))
-    phi_M_full = np.tile(phi_M[:,np.newaxis,np.newaxis],(1,n,8))
-    theta_M_full = np.tile(theta_M[:,np.newaxis,np.newaxis],(1,n,8))
-    ###
-
-    result = antiderivate_final(np.reshape(r_full, m * n * 8), np.reshape(phi_full, m * n * 8), np.reshape(z_full, m * n * 8), np.reshape(r_i12_full, m * n * 8), np.reshape(phi_j12_full, m * n * 8), np.reshape(z_k12_full, m * n * 8), np.reshape(phi_M_full, m * n * 8), np.reshape(theta_M_full, m * n * 8)) 
-
-    result = np.reshape(result, (m, n, 8, 3, 3)) * M_full / (4.0 * np.pi)
-
-    result_final = result[:,:,7,:,:] - result[:,:,6,:,:] - result[:,:,5,:,:] + result[:,:,4,:,:] - result[:,:,3,:,:] + result[:,:,2,:,:] + result[:,:,1,:,:] - result[:,:,0,:,:]
-
-    return np.squeeze(np.sum(result_final, axis = -1))
+    return result.T

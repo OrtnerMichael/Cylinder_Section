@@ -7,7 +7,7 @@ import numpy as np
 from florian_run_analytic_paper_final import H_total_final
 from magpy_getH import getH_cy_section
 
-N = 1000
+N = 222
 null = np.zeros(N)
 R = np.random.rand(N)*10
 R1,R2 = np.random.rand(2,N)*5
@@ -17,9 +17,10 @@ PHI2 = PHI1+PHI2
 Z,Z1,Z2 = (np.random.rand(3,N)-.5)*10
 Z2 = Z1+Z2
 mag = np.random.rand(N,3)
+cases = []
 
 if True:
-    cases = [112, 212, 132, 232]
+    cases += [112, 212, 132, 232]
     r, r1, r2, phi, phi1, phi2, z, z1, z2 = R, R1, R2, PHI, PHI1, PHI2, Z, Z1, Z2
     z1=z
     phi1 = phi
