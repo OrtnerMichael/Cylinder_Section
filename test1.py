@@ -7,7 +7,7 @@ import numpy as np
 from florian_run_analytic_paper_final import H_total_final
 from magpy_getH import getH_cy_section
 
-N = 222
+N=333
 null = np.zeros(N)
 R = np.random.rand(N)*10
 R1,R2 = np.random.rand(2,N)*5
@@ -18,6 +18,7 @@ Z,Z1,Z2 = (np.random.rand(3,N)-.5)*10
 Z2 = Z1+Z2
 mag = np.random.rand(N,3)
 cases = []
+
 
 if True:
     cases += [112, 212, 132, 232]
