@@ -1,10 +1,15 @@
+"""
+what is going on ?
+"""
+
 import numpy as np
 import scipy.integrate as integrate
 
 def xi(r, phi, z, r_dash, phi_dash, z_dash):
-
+    """
+    Hilfsterm der oft vorkommt, see xi in paper
+    """
     return np.sqrt(r**2 + r_dash**2 - 2.0 * r * r_dash * np.cos(phi - phi_dash) + (z - z_dash)**2)
-
 
 
 def H_r_ri(r, phi, z, r_i12, phi_j12, z_k12, phi_M, theta_M):

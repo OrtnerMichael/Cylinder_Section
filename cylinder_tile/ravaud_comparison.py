@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.constants import mu_0
 
-import magpy_getH
-import integrals_quad
+from cylinder_tile import magpy_getH
+from cylinder_tile import integrals_quad
 
 #comparison to the results in
 #Ravaud et al. Progress In Electromagnetics Research B, Vol. 24, 17–32, 2010
@@ -104,17 +104,18 @@ results = magpy_getH.getH_cy_section(obs_pos, dim, mag)
 
 ###########
 # quad
-res_quad = np.zeros(datapoints)
-for i in range(datapoints):
-    res_quad[i] = (integrals_quad.H_z_ri(r[i], phi[i], z[i], r_i12, phi_j12, z_k12, phi_M, theta_M) + integrals_quad.H_z_phij(r[i], phi[i], z[i], r_i12, phi_j12, z_k12, phi_M, theta_M) + integrals_quad.H_z_zk(r[i], phi[i], z[i], r_i12, phi_j12, z_k12, phi_M, theta_M)) * M / (4.0 * np.pi)
+# res_quad = np.zeros(datapoints)
+# for i in range(datapoints):
+#     res_quad[i] = (integrals_quad.H_z_ri(r[i], phi[i], z[i], r_i12, phi_j12, z_k12, phi_M, theta_M) + integrals_quad.H_z_phij(r[i], phi[i], z[i], r_i12, phi_j12, z_k12, phi_M, theta_M) + integrals_quad.H_z_zk(r[i], phi[i], z[i], r_i12, phi_j12, z_k12, phi_M, theta_M)) * M / (4.0 * np.pi)
 
 ###########
 
 plt.plot(z, results[:,2], 'k', linewidth=4)
-plt.plot(z, res_quad, 'y--', linewidth=2)
+# plt.plot(z, res_quad, 'y--', linewidth=2)
 plt.grid()
 plt.xlabel('z [m]')
 plt.ylabel('Hz [A/m]')
 plt.legend(('analytic','quad'))
-plt.savefig("z_Hz.png")
-plt.close()
+plt.show()
+# plt.savefig("z_Hz.png")
+# plt.close()

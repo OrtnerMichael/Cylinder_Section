@@ -1,5 +1,5 @@
 import numpy as np
-from special_cel import cel
+from cylinder_tile.special_cel import cel
 
 def el30(x, kc, p):
     """

@@ -4,10 +4,10 @@ Testing all cases of new VS original
 
 # pylint: disable=using-constant-test
 import numpy as np
-from florian_run_analytic_paper_final import H_total_final
-from magpy_getH import getH_cy_section
+from cylinder_tile.florian_run_analytic_paper_final import H_total_final
+from cylinder_tile.magpy_getH import getH_cy_section
 
-N=333
+N=3333
 null = np.zeros(N)
 R = np.random.rand(N)*10
 R1,R2 = np.random.rand(2,N)*5

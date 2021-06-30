@@ -1,6 +1,6 @@
 import numpy as np
-from special_el3 import el30, el3v, el3, el3_angle
-from special_cel import cel0, celv, cel
+from cylinder_tile.special_el3 import el30, el3v, el3, el3_angle
+from cylinder_tile.special_cel import cel0, celv, cel
 
 def test_el3_vs_original():
     """
@@ -16,7 +16,7 @@ def test_el3_vs_original():
     # np.save('data_test_el3', np.array([result0,x11,kc11,p11]))
 
     # load data from orginal implementation
-    data = np.load('data_test_el3.npy')
+    data = np.load('tests/data_test_el3.npy')
     res0, x11, kc11, p11 = data
 
     # compare to vectorized
@@ -41,7 +41,7 @@ def test_el3_angle_vs_original():
     # np.save('data_test_el3_angle', np.array([result0,phis,ns,ms]))
 
     # load data from orginal implementation
-    data = np.load('data_test_el3_angle.npy')
+    data = np.load('tests/data_test_el3_angle.npy')
     res0, phis, ns, ms = data
 
     # compare to vectorized
@@ -51,7 +51,7 @@ def test_el3_angle_vs_original():
 
 def test_el3s():
     """
-    test el30, el3v, el3
+    test el30, el3v, el3 vs each other
     """
     N = 999
     xs = (np.random.rand(N))*5
@@ -69,6 +69,7 @@ def test_el3s():
 def test_cels():
     """
     test cel, cel0 (from florian) vs celv (from magpylib original)
+    against each other
     """
     N = 999
     kcc = (np.random.rand(N)-.5)*10

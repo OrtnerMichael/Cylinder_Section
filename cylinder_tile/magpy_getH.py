@@ -4,7 +4,7 @@
 # pylint: disable=missing-function-docstring
 import numpy as np
 import scipy.special
-from special_el3 import el3_angle
+from cylinder_tile.special_el3 import el3_angle
 
 def close(arg1, arg2):
     """
