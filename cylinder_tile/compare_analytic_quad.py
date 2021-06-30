@@ -27,7 +27,7 @@ for r_var in r:
                 for phi_j_var in phi_j12:
                     for z_k_var in z_k12:
                         try:
-                            res_analytic = magpy_getH.getH_cy_section(np.array([[r_var, phi_var, z_var]]), np.array([np.concatenate((r_i_var, phi_j_var, z_k_var))]), np.array([[M, phi_M, theta_M]]))
+                            res_analytic = magpy_getH.field_H_cylinder(np.array([[r_var, phi_var, z_var]]), np.array([np.concatenate((r_i_var, phi_j_var, z_k_var))]), np.array([[M, phi_M, theta_M]]))
                             res_quad = np.array([[integrals_quad.H_r_ri(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_r_phij(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_r_zk(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M)], [integrals_quad.H_phi_ri(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_phi_phij(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_phi_zk(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M)], [integrals_quad.H_z_ri(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_z_phij(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_z_zk(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M)]]) * M / (4.0 * np.pi)
                             print(np.max(np.abs(np.sum(res_quad, axis = -1)-res_analytic)))
                         except:
@@ -40,5 +40,5 @@ r_i_var = np.sort(np.random.random(2) * 20.0 - 10.0)
 phi_j_var = np.sort(np.random.random(2) * 20.0 - 10.0)
 z_k_var = np.sort(np.random.random(2) * 20.0 - 10.0)
 res_quad = np.array([[integrals_quad.H_r_ri(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_r_phij(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_r_zk(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M)], [integrals_quad.H_phi_ri(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_phi_phij(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_phi_zk(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M)], [integrals_quad.H_z_ri(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_z_phij(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M), integrals_quad.H_z_zk(r_var, phi_var, z_var, r_i_var, phi_j_var, z_k_var, phi_M, theta_M)]]) * M / (4.0 * np.pi)
-res_analytic = magpy_getH.getH_cy_section(np.array([[r_var, phi_var, z_var]]), np.array([np.concatenate((r_i_var, phi_j_var, z_k_var))]), np.array([[M, phi_M, theta_M]]))
+res_analytic = magpy_getH.field_H_cylinder(np.array([[r_var, phi_var, z_var]]), np.array([np.concatenate((r_i_var, phi_j_var, z_k_var))]), np.array([[M, phi_M, theta_M]]))
 print(np.max(np.abs(np.sum(res_quad, axis = -1)-res_analytic)))

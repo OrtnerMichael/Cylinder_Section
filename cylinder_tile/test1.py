@@ -5,7 +5,7 @@ Testing all cases of new VS original
 # pylint: disable=using-constant-test
 import numpy as np
 from cylinder_tile.florian_run_analytic_paper_final import H_total_final
-from cylinder_tile.magpy_getH import getH_cy_section
+from cylinder_tile.magpy_getH import field_H_cylinder
 
 N=3333
 null = np.zeros(N)
@@ -28,7 +28,7 @@ if True:
     r = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(H1,H2)
 
@@ -40,7 +40,7 @@ if True:
     r = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(H1,H2)
 
@@ -53,7 +53,7 @@ if True:
     r1 = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -66,7 +66,7 @@ if True:
     r1 = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -79,7 +79,7 @@ if True:
     r = r2
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -93,7 +93,7 @@ if True:
     r1 = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -106,7 +106,7 @@ if True:
     r = r1
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -120,7 +120,7 @@ if True:
     r1 = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -134,7 +134,7 @@ if True:
     r1 = null
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 
@@ -147,7 +147,7 @@ if True:
     r = r2
     obs_pos = np.array([r, phi, z]).T
     dim = np.array([r1, r2, phi1, phi2, z1, z2]).T
-    H1 = getH_cy_section(obs_pos, dim, mag)
+    H1 = field_H_cylinder(obs_pos, dim, mag)
     H2 = H_total_final(obs_pos, dim, mag)
     assert np.allclose(np.nan_to_num(H1), np.nan_to_num(H2))
 

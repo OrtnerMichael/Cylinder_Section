@@ -1250,9 +1250,9 @@ def case235(r, r_i, r_bar_i, phi_bar_j, phi_bar_M, phi_bar_Mj, theta_M, z_bar_k)
     return results
 
 
-def getH_cy_section(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.ndarray:
+def field_H_cylinder(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.ndarray:
     """
-    Cylinder section field
+    Core computation of the Cylinder tile field based on Slanovc 2021
 
     obs_pos : ndarray, shape (N,3)
         observer positions (r,phi,z) in cy CS, units: [mm] [rad]
@@ -1260,8 +1260,6 @@ def getH_cy_section(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.n
         section dimensions (r1,r2,phi1,phi2,z1,z2) in cy CS , units: [mm] [rad]
     mag: ndarray, shape (N,3)
         magnetization vector (|M|, phi, th) in spherical CS, units: [mT] [rad]
-
-    Computation of the Cylinder section field is based on Slanovc2021
     """
 
     # tile inputs into 8-stacks (boundary cases)
@@ -1314,3 +1312,23 @@ def getH_cy_section(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.n
     result = result.T*mag[:,0]/(4*np.pi)
 
     return result.T
+
+
+def field_BH_cylinder2(
+        bh: bool,
+        mag: np.ndarray,
+        dim: np.ndarray,
+        pos_obs: np.ndarray
+        ) -> np.ndarray:
+    """
+    ### Args:
+    - bh (boolean): True=B, False=H
+    - mag (ndarray Nx3): homogeneous magnetization vector in cartesian CS units of [mT]
+    - dim (ndarray Nx2): dimension of Cylinder (r1,r2,phi1,phi2,z1,z2) in units of [mm], [deg]
+    - pos_obs (ndarray Nx3): position of observer in units of [mm]
+
+    ### Returns:
+    - B/H-field (ndarray Nx3): magnetic field vectors in cartesian CS at pos_obs
+        in units of [mT] or [kA/m]
+    """
+    
