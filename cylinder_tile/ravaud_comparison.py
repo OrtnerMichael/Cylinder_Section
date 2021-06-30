@@ -26,7 +26,7 @@ phi_M = np.pi + np.pi / 8.0
 theta_M = np.pi / 2.0
 mag = np.tile((M, phi_M, theta_M), (datapoints, 1))
 
-results = magpy_getH.field_H_cylinder(obs_pos, dim, mag)
+results = magpy_getH.field_H_cylinder_tile(obs_pos, dim, mag)
 ###########
 # quad
 res_quad = np.zeros(datapoints)
@@ -64,7 +64,7 @@ phi_M = np.pi + np.pi / 8.0
 theta_M = np.pi / 2.0
 mag = np.tile((M, phi_M, theta_M), (datapoints, 1))
 
-results = magpy_getH.field_H_cylinder(obs_pos, dim, mag)
+results = magpy_getH.field_H_cylinder_tile(obs_pos, dim, mag)
 
 ###########
 # quad
@@ -100,7 +100,7 @@ phi_M = np.pi + np.pi / 8.0
 theta_M = np.pi / 2.0
 mag = np.tile((M, phi_M, theta_M), (datapoints, 1))
 
-results = magpy_getH.field_H_cylinder(obs_pos, dim, mag)
+results = magpy_getH.field_H_cylinder_tile(obs_pos, dim, mag)
 
 ###########
 # quad

@@ -1250,7 +1250,7 @@ def case235(r, r_i, r_bar_i, phi_bar_j, phi_bar_M, phi_bar_Mj, theta_M, z_bar_k)
     return results
 
 
-def field_H_cylinder(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.ndarray:
+def field_H_cylinder_tile(obs_pos: np.ndarray, dim: np.ndarray, mag:np.ndarray) ->np.ndarray:
     """
     Core computation of the Cylinder tile field based on Slanovc 2021
 
