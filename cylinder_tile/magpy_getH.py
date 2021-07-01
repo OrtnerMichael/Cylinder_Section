@@ -1331,4 +1331,37 @@ def field_BH_cylinder2(
     - B/H-field (ndarray Nx3): magnetic field vectors in cartesian CS at pos_obs
         in units of [mT] or [kA/m]
     """
-    
+    # edgesize = Config.EDGESIZE
+
+    # transform dim deg->rad
+    dim[:,2] = dim[:,2]/180*np.pi
+    dim[:,3] = dim[:,3]/180*np.pi
+
+    # transform obs_pos to Cy CS --------------------------------------------
+    x, y, z = pos_obs.T
+    r, phi = np.sqrt(x**2+y**2), np.arctan2(y, x)
+    pos_obs_cy = np.concatenate(((r,),(phi,),(z,)),axis=0).T
+
+    # transform mag to spherical CS -----------------------------------------
+    m = np.sqrt(mag[:,0]**2 + mag[:,1]**2 + mag[:,2]**2)
+    phi_m = np.arctan2(mag[:,1], mag[:,0])
+    th_m = np.arctan2(np.sqrt(mag[:,0]**2+mag[:,1]**2), mag[:,2])
+    mag_sph = np.concatenate(((m,),(phi_m,),(th_m,)),axis=0).T
+
+    # compute H and transform to cart CS -------------------------------------
+    H_cy = field_H_cylinder_tile(pos_obs_cy, dim, mag_sph)
+    Hr, Hphi, Hz = H_cy.T
+    Hx = Hr*np.cos(phi) - Hphi*np.sin(phi)
+    Hy = Hr*np.sin(phi) + Hphi*np.cos(phi)
+    H = np.concatenate(((Hx,),(Hy,),(Hz,)),axis=0).T*10/4/np.pi
+
+    # return B or H --------------------------------------------------------
+    if not bh:
+        return H
+
+    B = H/(10/4/np.pi) # kA/m -> mT
+    r1,r2,phi1,phi2,z1,z2 = dim.T
+    phi[phi<0] += 2*np.pi  # map phi on interval [0,2pi]
+    mask_inside = (r1<r) * (r<r2) * (phi1<phi) * (phi<phi2) * (z1<z) * (z<z2)
+    B[mask_inside] += mag[mask_inside]
+    return B
